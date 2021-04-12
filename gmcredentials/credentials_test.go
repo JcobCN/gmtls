@@ -7,7 +7,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/tjfoc/gmsm/sm2"
+	"github.com/tjfoc/gmsm/x509"
 	"github.com/tjfoc/gmtls"
 	"github.com/tjfoc/gmtls/gmcredentials/echo"
 	"golang.org/x/net/context"
@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	port    = ":50051"
-	address = "localhost:50051"
+	port    = ":32768"
+	address = "localhost:32768"
 )
 
 var end chan bool
@@ -38,7 +38,7 @@ func serverRun() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	certPool := sm2.NewCertPool()
+	certPool := x509.NewCertPool()
 	cacert, err := ioutil.ReadFile(ca)
 	if err != nil {
 		log.Fatal(err)
@@ -54,12 +54,15 @@ func serverRun() {
 		Certificates: []gmtls.Certificate{cert},
 		ClientCAs:    certPool,
 	})
+	log.Println("111")
 	s := grpc.NewServer(grpc.Creds(creds))
 	echo.RegisterEchoServer(s, &server{})
+	log.Println("222")
 	err = s.Serve(lis)
 	if err != nil {
 		log.Fatalf("Serve: %v", err)
 	}
+	log.Println("333")
 }
 
 func clientRun() {
@@ -67,7 +70,7 @@ func clientRun() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	certPool := sm2.NewCertPool()
+	certPool := x509.NewCertPool()
 	cacert, err := ioutil.ReadFile(ca)
 	if err != nil {
 		log.Fatal(err)
